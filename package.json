@@ -1,4 +1,9 @@
 {
+  "name": "secure-azure-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo No build step required"
+  },
   "dependencies": {
     "mssql": "^11.0.1"
   }
