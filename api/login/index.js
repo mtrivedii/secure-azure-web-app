@@ -2,15 +2,6 @@ const { getConnection } = require('../db');
 const sql = require('mssql');
 
 module.exports = async function (context, req) {
-  if (!req.body || !req.body.email || !req.body.password) {
-    context.res = {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Missing email or password in request body' })
-    };
-    return;
-  }
-
   try {
     const { email, password } = req.body;
     const pool = await getConnection();
@@ -24,21 +15,20 @@ module.exports = async function (context, req) {
     if (result.recordset.length > 0) {
       context.res = {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Login successful' })
+        body: { message: 'Login successful' }
       };
     } else {
       context.res = {
         status: 401,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Invalid credentials' })
+        body: { error: 'Invalid credentials' }
       };
     }
   } catch (err) {
+    console.error('API Error:', err); // Log error to server logs
+    context.log.error(`Error details: ${err.message}`, { stack: err.stack }); // Additional logging
     context.res = {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Server error: ' + err.message })
+      body: { error: 'Server error: ' + err.message }
     };
   }
 };
