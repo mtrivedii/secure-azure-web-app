@@ -3,7 +3,7 @@ const sql = require('mssql');
 
 module.exports = async function (context, req) {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body; // These are the credentials sent from the client
     const pool = await getConnection();
 
     const result = await pool
@@ -15,20 +15,19 @@ module.exports = async function (context, req) {
     if (result.recordset.length > 0) {
       context.res = {
         status: 200,
-        body: { message: 'Login successful' }
+        body: { message: 'Login successful' },
       };
     } else {
       context.res = {
         status: 401,
-        body: { error: 'Invalid credentials' }
+        body: { error: 'Invalid credentials' },
       };
     }
   } catch (err) {
-    console.error('API Error:', err); // Log error to server logs
-    context.log.error(`Error details: ${err.message}`, { stack: err.stack }); // Additional logging
+    console.error('Error:', err);
     context.res = {
       status: 500,
-      body: { error: 'Server error: ' + err.message }
+      body: { error: 'Server error: ' + err.message },
     };
   }
 };
