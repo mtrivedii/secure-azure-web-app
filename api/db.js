@@ -1,17 +1,28 @@
-const sql = require("mssql");
+const sql = require('mssql');
 
 const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
+  server: 'maanit-sql-server.database.windows.net',
+  database: 'secureAppDB',
+  authentication: {
+    type: 'azure-active-directory-password',
+    options: {
+      userName: '455184@student.fontys.nl',
+      password: process.env.DB_PASSWORD
+    }
+  },
   options: {
-    encrypt: true,
-    trustServerCertificate: false
+    encrypt: true
   }
 };
 
-module.exports = {
-  sql,
-  config
-};
+async function getConnection() {
+  try {
+    const pool = await sql.connect(config);
+    return pool;
+  } catch (err) {
+    console.error('DB connection error:', err);
+    throw err;
+  }
+}
+
+module.exports = { getConnection };
