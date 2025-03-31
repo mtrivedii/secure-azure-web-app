@@ -4,22 +4,20 @@ const config = {
   server: process.env.DB_SERVER,
   database: process.env.DB_NAME,
   authentication: {
-    type: 'azure-active-directory-msi-v2'
+    type: 'azure-active-directory-msi-app-service'
   },
   options: {
-    encrypt: true,
-    enableArithAbort: true
+    encrypt: true
   }
 };
 
+let pool;
+
 async function getConnection() {
-  try {
-    const pool = await sql.connect(config);
-    return pool;
-  } catch (err) {
-    console.error('Database connection failed:', err);
-    throw err;
+  if (!pool) {
+    pool = await sql.connect(config);
   }
+  return pool;
 }
 
 module.exports = { getConnection };
