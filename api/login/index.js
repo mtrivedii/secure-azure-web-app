@@ -1,28 +1,33 @@
-const { sql, config } = require("../db");
+const { getConnection } = require('../db');
+const sql = require('mssql');
 
 module.exports = async function (context, req) {
   try {
     const { email, password } = req.body;
+    const pool = await getConnection();
 
-    await sql.connect(config);
-    const result = await sql.query`SELECT * FROM Users WHERE Email = ${email} AND Password = ${password}`;
+    const result = await pool
+      .request()
+      .input('email', sql.VarChar, email)
+      .input('password', sql.VarChar, password)
+      .query('SELECT * FROM Users WHERE email = @email AND password = @password');
 
     if (result.recordset.length > 0) {
       context.res = {
         status: 200,
-        body: { message: "Login successful" }
+        body: { message: 'Login successful' }
       };
     } else {
       context.res = {
         status: 401,
-        body: { error: "Invalid credentials" }
-      };    
+        body: { error: 'Invalid credentials' }
+      };
     }
   } catch (err) {
-    context.log("LOGIN ERROR:", err); // This will show up in App Insights
+    console.error('API Error:', err); // 🔍 shows in App Logs / CI/CD
     context.res = {
       status: 500,
-      body: { error: "Internal Server Error" }
+      body: { error: 'Server error: ' + err.message }
     };
   }
 };
