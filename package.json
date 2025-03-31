@@ -1,9 +1,6 @@
 {
-  "name": "api",
-  "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "build": "echo 'No build needed'"
   },
   "dependencies": {
     "mssql": "^11.0.1"
